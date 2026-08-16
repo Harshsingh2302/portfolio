@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harsh Singh — Backend Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#0A0E13;
+    --surface:#10161D;
+    --surface-2:#161E27;
+    --ledger:#F3EFE6;
+    --ledger-dim:#E5DFCf;
+    --ink:#0A0E13;
+    --line:#232B36;
+    --line-soft:#1B222B;
+    --text:#E7ECF2;
+    --text-dim:#8B96A5;
+    --text-faint:#5A6472;
+    --signal:#2FD9A8;
+    --signal-dim:#1B8F6E;
+    --amber:#F0A93A;
+    --rose:#E8637A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--signal);color:var(--void);}
+  a{color:inherit;text-decoration:none;}
+
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--signal);
+    display:flex;align-items:center;gap:8px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 8px var(--signal);}
+
+  /* ---------- TICKER ---------- */
+  .ticker-wrap{
+    background:var(--ink);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:9px 0;
+    position:sticky;top:0;z-index:50;
+  }
+  .ticker{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.03em;
+    color:var(--text-dim);
+    animation:scroll 38s linear infinite;
+  }
+  .ticker span{margin-right:36px;}
+  .ticker .up{color:var(--signal);}
+  .ticker .warn{color:var(--amber);}
+  @keyframes scroll{
+    0%{transform:translateX(0);}
+    100%{transform:translateX(-50%);}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ticker{animation:none;}
+  }
+
+  /* ---------- NAV ---------- */
+  nav{
+    max-width:1120px;margin:0 auto;
+    padding:22px 32px 0;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .logo{
+    font-family:'Fraunces',serif;
+    font-weight:600;font-size:18px;
+    letter-spacing:.01em;
+  }
+  .logo .dot{color:var(--signal);}
+  .navlinks{display:flex;gap:28px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);}
+  .navlinks a:hover{color:var(--signal);}
+  @media (max-width:640px){.navlinks{display:none;}}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    max-width:1120px;margin:0 auto;
+    padding:96px 32px 80px;
+    display:grid;grid-template-columns:1.3fr .9fr;gap:56px;align-items:start;
+  }
+  @media (max-width:860px){.hero{grid-template-columns:1fr;padding:56px 24px 48px;}}
+
+  .hero h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(44px,7vw,74px);
+    line-height:1.02;
+    letter-spacing:-.01em;
+  }
+  .hero h1 em{font-style:italic;font-weight:500;color:var(--signal);}
+  .hero .role{
+    margin-top:22px;
+    font-size:19px;
+    color:var(--text-dim);
+    max-width:46ch;
+    line-height:1.55;
+  }
+  .hero .role strong{color:var(--text);font-weight:500;}
+
+  .cta-row{display:flex;gap:14px;margin-top:36px;flex-wrap:wrap;}
+  .btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;letter-spacing:.04em;
+    padding:13px 22px;border-radius:3px;
+    display:inline-flex;align-items:center;gap:8px;
+    transition:all .15s ease;
+    border:1px solid var(--line);
+  }
+  .btn-primary{background:var(--signal);color:var(--ink);border-color:var(--signal);font-weight:600;}
+  .btn-primary:hover{background:var(--ledger);border-color:var(--ledger);}
+  .btn-ghost{color:var(--text);}
+  .btn-ghost:hover{border-color:var(--signal);color:var(--signal);}
+
+  /* dashboard card */
+  .dash{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .dash-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:13px 18px;border-bottom:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);
+  }
+  .dash-head .dots{display:flex;gap:6px;}
+  .dash-head .dots span{width:7px;height:7px;border-radius:50%;background:var(--line);}
+  .dash-body{padding:20px 18px;}
+  .metric-row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:11px 0;border-bottom:1px dashed var(--line-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .metric-row:last-child{border-bottom:none;}
+  .metric-label{font-size:12px;color:var(--text-dim);}
+  .metric-val{font-size:14px;color:var(--text);font-weight:500;}
+  .metric-val.signal{color:var(--signal);}
+  .metric-val.amber{color:var(--amber);}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{max-width:1120px;margin:0 auto;padding:64px 32px;}
+  @media (max-width:860px){section{padding:48px 24px;}}
+  .rule{border-top:1px solid var(--line);}
+  h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;font-size:clamp(28px,4vw,38px);
+    letter-spacing:-.01em;margin-bottom:36px;
+  }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;}
+  @media (max-width:860px){.about-grid{grid-template-columns:1fr;gap:28px;}}
+  .about-grid p{color:var(--text-dim);line-height:1.75;font-size:15.5px;margin-bottom:16px;}
+  .about-grid strong{color:var(--text);font-weight:500;}
+  .stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px;border-radius:4px;overflow:hidden;}
+  .stat{background:var(--surface);padding:18px 14px;}
+  .stat .num{font-family:'Fraunces',serif;font-size:26px;color:var(--signal);}
+  .stat .lbl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-faint);letter-spacing:.05em;text-transform:uppercase;margin-top:4px;}
+
+  /* ---------- EXPERIENCE (log) ---------- */
+  .log-entry{
+    display:grid;grid-template-columns:150px 1fr;gap:28px;
+    padding:28px 0;border-bottom:1px solid var(--line-soft);
+  }
+  .log-entry:last-child{border-bottom:none;}
+  @media (max-width:640px){.log-entry{grid-template-columns:1fr;gap:8px;}}
+  .log-time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-faint);padding-top:2px;}
+  .log-title{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:4px;}
+  .log-sub{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--signal);margin-bottom:12px;}
+  .log-body{color:var(--text-dim);line-height:1.7;font-size:14.5px;max-width:64ch;}
+  .tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--text-dim);
+    border:1px solid var(--line);padding:4px 9px;border-radius:20px;
+  }
+
+  /* ---------- PROJECTS ---------- */
+  .proj-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+  @media (max-width:760px){.proj-grid{grid-template-columns:1fr;}}
+  .proj-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:6px;
+    padding:26px;display:flex;flex-direction:column;height:100%;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .proj-card:hover{border-color:var(--signal-dim);transform:translateY(-2px);}
+  .proj-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .proj-name{font-family:'Fraunces',serif;font-size:20px;font-weight:600;}
+  .proj-link{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);border:1px solid var(--line);border-radius:20px;padding:5px 11px;white-space:nowrap;}
+  .proj-link:hover{color:var(--signal);border-color:var(--signal);}
+  .proj-desc{color:var(--text-dim);font-size:14px;line-height:1.65;flex-grow:1;margin-bottom:16px;}
+  .proj-desc strong{color:var(--text);font-weight:500;}
+
+  /* ---------- SKILLS ---------- */
+  .skill-groups{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  @media (max-width:760px){.skill-groups{grid-template-columns:1fr 1fr;}}
+  .skill-col{padding:22px;border-right:1px solid var(--line);}
+  .skill-col:last-child{border-right:none;}
+  @media (max-width:760px){.skill-col:nth-child(2n){border-right:none;} .skill-col{border-bottom:1px solid var(--line);}}
+  .skill-col h4{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--signal);margin-bottom:14px;}
+  .skill-col ul{list-style:none;}
+  .skill-col li{font-size:13.5px;color:var(--text-dim);padding:5px 0;}
+
+  /* ---------- PREP PANEL ---------- */
+  .prep-panel{
+    background:var(--surface);border:1px solid var(--line);border-radius:6px;
+    padding:32px;display:grid;grid-template-columns:1.2fr 1fr;gap:32px;align-items:center;
+  }
+  @media (max-width:760px){.prep-panel{grid-template-columns:1fr;}}
+  .prep-panel p{color:var(--text-dim);line-height:1.7;font-size:14.5px;}
+  .bar-list{display:flex;flex-direction:column;gap:14px;}
+  .bar-item{font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+  .bar-item .bl{display:flex;justify-content:space-between;color:var(--text-dim);margin-bottom:6px;}
+  .bar-track{height:6px;background:var(--void);border-radius:3px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--signal);border-radius:3px;}
+
+  /* ---------- CONTACT ---------- */
+  .contact-shell{
+    background:var(--ledger);color:var(--ink);
+    border-radius:8px;padding:56px 48px;
+    display:grid;grid-template-columns:1.1fr .9fr;gap:40px;
+  }
+  @media (max-width:760px){.contact-shell{grid-template-columns:1fr;padding:36px 26px;}}
+  .contact-shell h2{color:var(--ink);}
+  .contact-shell .lead{color:#4A5560;font-size:15px;line-height:1.7;max-width:44ch;}
+  .contact-list{font-family:'IBM Plex Mono',monospace;font-size:14px;}
+  .contact-list .row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #D8D2C4;}
+  .contact-list .row:last-child{border-bottom:none;}
+  .contact-list .k{color:#7A8290;}
+  .contact-list .v{color:var(--ink);font-weight:500;}
+  .contact-list .v:hover{color:var(--signal-dim);}
+
+  footer{
+    max-width:1120px;margin:0 auto;padding:32px 32px 60px;
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-faint);
+    flex-wrap:wrap;gap:10px;
+  }
+
+  .fade-up{opacity:0;transform:translateY(16px);animation:fadeUp .7s ease forwards;}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker"></div>
+</div>
+
+<nav>
+  <div class="logo">HARSH<span class="dot">.</span>SINGH</div>
+  <div class="navlinks">
+    <a href="#about">ABOUT</a>
+    <a href="#experience">EXPERIENCE</a>
+    <a href="#projects">PROJECTS</a>
+    <a href="#skills">SKILLS</a>
+    <a href="#contact">CONTACT</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Open to Backend Engineering roles</div>
+    <h1>Systems that hold<br>up under <em>load.</em></h1>
+    <p class="role">
+      I'm <strong>Harsh Singh</strong>, a final-year Computer Science student building backend systems the way
+      I was trained to test storage systems — assume it will fail under load, then prove it won't.
+      Currently targeting a <strong>Backend Engineer</strong> role at smallcase.
+    </p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#projects">View projects →</a>
+      <a class="btn btn-ghost" href="#" id="resume-link">Download résumé</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/harshsingh2302/" target="_blank">LinkedIn ↗</a>
+    </div>
+  </div>
+
+  <div class="dash fade-up" style="animation-delay:.15s">
+    <div class="dash-head">
+      <span>system_profile.log</span>
+      <div class="dots"><span></span><span></span><span></span></div>
+    </div>
+    <div class="dash-body">
+      <div class="metric-row"><span class="metric-label">RAID configs validated</span><span class="metric-val signal">0 / 1 / 5 / 6 / 10</span></div>
+      <div class="metric-row"><span class="metric-label">Interfaces tested</span><span class="metric-val">SAS · SATA · NVMe</span></div>
+      <div class="metric-row"><span class="metric-label">Hypervisor</span><span class="metric-val">VMware ESXi / vSphere</span></div>
+      <div class="metric-row"><span class="metric-label">Server hardware</span><span class="metric-val">Dell PowerEdge R760</span></div>
+      <div class="metric-row"><span class="metric-label">Core stack</span><span class="metric-val signal">Java · Spring Boot</span></div>
+      <div class="metric-row"><span class="metric-label">CGPA</span><span class="metric-val">8.2 / 10</span></div>
+      <div class="metric-row"><span class="metric-label">Grad status</span><span class="metric-val amber">May 2026</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="rule"></div>
+
+<section id="about">
+  <div class="eyebrow">About</div>
+  <div class="about-grid">
+    <div>
+      <p>I spent my internship at <strong>Calsoft Pvt. Ltd.</strong> doing functional and performance testing on
+      Dell PERC H965i RAID controllers — pushing storage configurations to their limits across RAID 0/1/5/6/10 and
+      SAS/SATA/NVMe interfaces inside VMware ESXi/vSphere environments. That work taught me to think in terms of
+      failure modes, throughput under contention, and what "reliable" actually has to mean at the hardware level.</p>
+      <p>I'm now applying that same discipline to backend engineering — designing APIs, securing them properly,
+      and reasoning about the systems underneath them, not just the endpoints on top. I care about correctness
+      under load, which is exactly the kind of problem a platform moving people's money into the market can't
+      get wrong.</p>
+    </div>
+    <div>
+      <p>Outside of coursework, I run a fairly obsessive DSA practice routine — structured, multi-set daily sprints,
+      tracked and logged like a build pipeline. I'd rather over-prepare for a system design or DSA round than
+      wing it.</p>
+      <div class="stat-strip">
+        <div class="stat"><div class="num">5</div><div class="lbl">RAID levels tested</div></div>
+        <div class="stat"><div class="num">100+</div><div class="lbl">DSA problems / sprint</div></div>
+        <div class="stat"><div class="num">8.2</div><div class="lbl">CGPA</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section id="experience">
+  <div class="eyebrow">Experience</div>
+  <h2>Where the discipline came from</h2>
+
+  <div class="log-entry">
+    <div class="log-time mono">2025<br>PUNE, IN</div>
+    <div>
+      <div class="log-title">R&D Engineering Intern — Calsoft Pvt. Ltd.</div>
+      <div class="log-sub">Storage &amp; Virtualization</div>
+      <div class="log-body">
+        Ran functional and performance test suites on Dell PERC H965i RAID controllers mounted on PowerEdge R760
+        servers, covering RAID 0, 1, 5, 6 and 10 across SAS, SATA and NVMe interfaces inside a VMware ESXi/vSphere
+        stack. Built test cases around degraded-array behaviour, rebuild timing, and throughput consistency —
+        the same category of problem backend systems face when a downstream dependency starts misbehaving under load.
+      </div>
+      <div class="tag-row">
+        <span class="tag">RAID 0/1/5/6/10</span>
+        <span class="tag">VMware ESXi / vSphere</span>
+        <span class="tag">Performance Testing</span>
+        <span class="tag">SAS / SATA / NVMe</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="log-entry">
+    <div class="log-time mono">2022–2026<br>GALGOTIAS</div>
+    <div>
+      <div class="log-title">B.Tech, Computer Science &amp; Engineering</div>
+      <div class="log-sub">Galgotias University · CGPA 8.2</div>
+      <div class="log-body">
+        Final-year project: <strong>CKD-AI</strong>, a chronic kidney disease diagnosis system comparing Logistic
+        Regression, Decision Tree, Random Forest and SVM on the UCI CKD dataset, with SHAP-based explainability
+        and a Flask deployment layer.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section id="projects">
+  <div class="eyebrow">Projects</div>
+  <h2>What I've shipped</h2>
+  <div class="proj-grid">
+
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-name">Employee Management System</div>
+        <a class="proj-link" href="#">GitHub ↗</a>
+      </div>
+      <div class="proj-desc">
+        Full-stack HR platform with a <strong>Spring Boot</strong> backend secured via <strong>Spring Security
+        + JWT</strong>, and a React/Vite frontend styled with Tailwind CSS. Role-based access, authenticated REST
+        endpoints, and a clean separation between API and client — packaged as a deployable build.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Spring Boot</span><span class="tag">JWT</span><span class="tag">React</span><span class="tag">Tailwind</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-name">E-Commerce Backend</div>
+        <a class="proj-link" href="#">GitHub ↗</a>
+      </div>
+      <div class="proj-desc">
+        Containerized backend service <strong>Dockerized</strong> and deployed to <strong>AWS EC2</strong>,
+        covering the core commerce flows an API layer needs to get right — catalog, cart and order handling —
+        with deployment treated as a first-class part of the build, not an afterthought.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Docker</span><span class="tag">AWS EC2</span><span class="tag">REST API</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-name">AI Email Writer</div>
+        <a class="proj-link" href="#">GitHub ↗</a>
+      </div>
+      <div class="proj-desc">
+        A tool that drafts email content via the <strong>Google Gemini 1.5 Flash API</strong>, wiring a
+        third-party LLM endpoint into a usable product surface — request handling, prompt structuring, and
+        response formatting on the backend.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Gemini API</span><span class="tag">Backend Integration</span>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-top">
+        <div class="proj-name">CKD-AI</div>
+        <a class="proj-link" href="#">GitHub ↗</a>
+      </div>
+      <div class="proj-desc">
+        Final-year ML project diagnosing chronic kidney disease from the UCI dataset. Compared Logistic
+        Regression, Decision Tree, <strong>Random Forest (~98.75% accuracy)</strong> and SVM, added SHAP
+        explainability, and shipped it behind a <strong>Flask</strong> API for inference.
+      </div>
+      <div class="tag-row">
+        <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">scikit-learn</span><span class="tag">SHAP</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section id="skills">
+  <div class="eyebrow">Skills</div>
+  <h2>What I build with</h2>
+  <div class="skill-groups">
+    <div class="skill-col">
+      <h4>Languages</h4>
+      <ul><li>Java</li><li>Python</li><li>JavaScript</li><li>SQL</li></ul>
+    </div>
+    <div class="skill-col">
+      <h4>Backend</h4>
+      <ul><li>Spring Boot</li><li>Spring Security / JWT</li><li>REST APIs</li><li>Flask</li></ul>
+    </div>
+    <div class="skill-col">
+      <h4>Infra &amp; Systems</h4>
+      <ul><li>Docker</li><li>AWS EC2</li><li>VMware ESXi / vSphere</li><li>RAID / Storage Systems</li></ul>
+    </div>
+    <div class="skill-col">
+      <h4>Tooling</h4>
+      <ul><li>Git / GitHub</li><li>React (frontend basics)</li><li>DSA (Java &amp; Python)</li><li>System Design fundamentals</li></ul>
+    </div>
+  </div>
+</section>
+
+<div class="rule"></div>
+
+<section id="prep">
+  <div class="eyebrow">Interview Readiness</div>
+  <h2>How I prepare</h2>
+  <div class="prep-panel">
+    <p>
+      I treat interview prep like a build pipeline: structured, tracked, repeated. My current sprint is a
+      10-day, 3-sets-a-day DSA cycle across patterns — two pointers, sliding window, binary search, stacks
+      &amp; queues, hashing — solved in Java with both brute-force and optimized passes, logged and reviewed
+      like a test suite, not crammed the night before.
+    </p>
+    <div class="bar-list">
+      <div class="bar-item"><div class="bl"><span>Two Pointers / Sliding Window</span><span>●●●●●</span></div><div class="bar-track"><div class="bar-fill" style="width:90%"></div></div></div>
+      <div class="bar-item"><div class="bl"><span>Binary Search / Sorting</span><span>●●●●○</span></div><div class="bar-track"><div class="bar-fill" style="width:80%"></div></div></div>
+      <div class="bar-item"><div class="bl"><span>Stacks, Queues &amp; Hash Maps</span><span>●●●●○</span></div><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div></div>
+      <div class="bar-item"><div class="bl"><span>System Design fundamentals</span><span>●●●○○</span></div><div class="bar-track"><div class="bar-fill" style="width:60%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="contact-shell">
+    <div>
+      <div class="eyebrow" style="color:var(--signal-dim);">Let's talk</div>
+      <h2>Ready to build backend systems at smallcase.</h2>
+      <p class="lead">
+        I'm graduating in May 2026 and looking for a Backend Engineer role where reliability isn't optional.
+        Reach out — I reply fast and I show up prepared.
+      </p>
+    </div>
+    <div class="contact-list">
+      <div class="row"><span class="k">Email</span><a class="v" href="mailto:your.email@example.com">your.email@example.com</a></div>
+      <div class="row"><span class="k">Phone</span><span class="v">+91 XXXXX XXXXX</span></div>
+      <div class="row"><span class="k">LinkedIn</span><a class="v" href="https://www.linkedin.com/in/harshsingh2302/" target="_blank">/in/harshsingh2302</a></div>
+      <div class="row"><span class="k">GitHub</span><a class="v" href="#">/your-github</a></div>
+      <div class="row"><span class="k">Location</span><span class="v">Pune, India</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Harsh Singh — built with intent, tested like it matters.</span>
+  <span>status: <span style="color:var(--signal);">available for hire</span></span>
+</footer>
+
+<script>
+  const items = [
+    "SYSTEM STATUS: <span class='up'>OPERATIONAL</span>",
+    "RAID 0/1/5/6/10 <span class='up'>VALIDATED</span>",
+    "SAS · SATA · NVMe <span class='up'>TESTED</span>",
+    "SPRING BOOT + JWT AUTH <span class='up'>DEPLOYED</span>",
+    "DOCKER → AWS EC2 <span class='up'>LIVE</span>",
+    "DSA SPRINT: <span class='warn'>100 PROBLEMS / CYCLE</span>",
+    "CGPA <span class='up'>8.2 / 10</span>",
+    "GRAD ETA: <span class='warn'>MAY 2026</span>",
+    "OPEN TO: <span class='up'>BACKEND ENGINEER ROLES</span>"
+  ];
+  const seq = items.map(i => `<span>${i}</span>`).join("");
+  document.getElementById('ticker').innerHTML = seq + seq;
+</script>
+
+</body>
+</html>
